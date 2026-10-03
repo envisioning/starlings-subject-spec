@@ -11,6 +11,8 @@ Every version of the Starlings Subject Spec, newest first. `SPEC.md`
 - A rule for every record: a nullable field is present with `null`.
 - The conformance suite grows to 60 checks, with subject and task cases.
   The runner accepts `validateSubject` and `validateTask`.
+- The repository is a Claude Code plugin marketplace: `starlings-skills`
+  installs the five skills.
 
 ## 0.1.0
 

@@ -18,12 +18,21 @@ tool may implement the spec without permission.
 | `skills/<name>/SKILL.md` | Portable skills in the [Agent Skills](https://agentskills.io) format. Each one is one procedure | [starlingshq.com/skills](https://starlingshq.com/skills) |
 | `src/` | The reference code (TypeScript, zod): kinds, doors and records. The JSON Schema is generated from `src/schema.ts` | [starlingshq.com/spec/schema.json](https://starlingshq.com/spec/schema.json) |
 | `conformance/` | `cases.json`, the conformance contract; `run.mjs`, a zero-dependency runner; the reference adapter | [starlingshq.com/spec/conformance/](https://starlingshq.com/spec/conformance/cases.json) |
+| `.claude-plugin/` | The Claude Code plugin marketplace (`starlings`) and plugin (`starlings-skills`) that install the skills | |
 | `CHANGELOG.md` | Every spec version | |
 
 ## Use it
 
-- **Install the skills.** Copy a skill folder into your agent's skills
-  folder, for example `~/.claude/skills/find-the-subject/`.
+- **Install the skills.** In Claude Code, this repository is a plugin
+  marketplace:
+
+  ```sh
+  claude plugin marketplace add envisioning/starlings-subject-spec
+  claude plugin install starlings-skills@starlings
+  ```
+
+  For another agent, copy a skill folder into its skills folder, for example
+  `~/.claude/skills/find-the-subject/`.
 - **Implement the spec.** Read `SPEC.md`, then run the conformance suite. In
   JavaScript or TypeScript, write an adapter and run
   `node conformance/run.mjs ./your-adapter.mjs`; the runner needs no
