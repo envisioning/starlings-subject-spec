@@ -10,10 +10,10 @@ without permission. The licence is Apache-2.0.
 
 ## Status
 
-Version 0.1.0. This is a first draft. It names the kinds, the doors and one
-record, the decision, and has a conformance suite for them. Other records
-follow: the subject itself, the task, the goal, the meeting record and the
-act record: a signed, append-only log of what each person and agent did.
+Version 0.2.0. This is a draft. It names the kinds, the doors and three
+records (the subject, the task and the decision) and has a conformance suite
+for them. Other records follow: the goal, the meeting record and the act
+record, a signed, append-only log of what each person and agent did.
 
 ## Subject kinds
 
@@ -47,14 +47,41 @@ another implementation to read them.
 
 ## Records
 
+An implementation may add fields to any record. It must keep every field the
+spec names, with the same type. A field the spec marks nullable is present
+with `null`, not left out. The fields are in the schema below.
+
+### Subject
+
+One thing a company works on. A subject has a kind, an id that is unique
+within that kind, a title, and an optional line of context. Its door is
+`subject:<kind>:<id>`.
+
+### Task
+
+Work someone must do. A task usually belongs to one subject, named by
+`subject_kind` and `subject_id`; both are null for a task that belongs to
+none. Its due date is a day, `YYYY-MM-DD`, with no time.
+
+| Status | Meaning |
+| --- | --- |
+| `proposed` | An agent suggested it. No person has accepted it yet |
+| `pending` | Accepted, not started |
+| `in_progress` | Someone is working on it |
+| `review` | Done, waiting for a check |
+| `blocked` | Cannot move until something else happens |
+| `completed` | Done |
+| `cancelled` | Dropped after it was accepted |
+| `declined` | A person turned down a proposed task |
+
+An agent that is not sure a task is wanted files it as `proposed` and lets a
+person accept or decline it.
+
 ### Decision
 
 A settled choice on one subject. An implementation writes a decision once
 and does not edit it. To change a decision, it records a new decision whose
 body names the old one.
-
-The fields are in the schema below. An implementation may add fields. It must
-keep every field the spec names, with the same type.
 
 ## Conformance
 
@@ -69,13 +96,13 @@ any language reads it and runs the rules below.
 | `doors.valid` | Reading `door` gives `parsed`, and writing `parsed` gives `door` back |
 | `doors.invalid` | Reading the door gives nothing |
 | `doors.productOnly` | The door may be read by the product that defines it, but never as one of the `doorKinds` |
-| `decisions.valid` | The record is a valid decision. An extra field does not make it invalid |
-| `decisions.invalid` | The record is not a valid decision. A case with `bodyLength` sets `body` to that many characters first |
+| `subjects.valid`, `tasks.valid`, `decisions.valid` | The record is valid. An extra field does not make it invalid |
+| `subjects.invalid`, `tasks.invalid`, `decisions.invalid` | The record is not valid. A decision case with `bodyLength` sets `body` to that many characters first |
 
 For a JavaScript or TypeScript implementation, `/spec/conformance/run.mjs`
 runs the cases with no dependencies. Write an adapter module that exports
 `subjectKinds`, `parseDoor`, `doorString` and, optionally,
-`validateDecision`, then run `node run.mjs ./adapter.mjs`. The reference
+`validateSubject`, `validateTask` and `validateDecision`, then run `node run.mjs ./adapter.mjs`. The reference
 implementation's adapter is `/spec/conformance/reference-adapter.mjs`.
 
 ## Versions

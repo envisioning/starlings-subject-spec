@@ -3,6 +3,15 @@
 Every version of the Starlings Subject Spec, newest first. `SPEC.md`
 §Versions says what a patch, a minor and a major version may change.
 
+## 0.2.0
+
+- Records: the subject and the task.
+- Task statuses, including `proposed` for a task an agent suggested and
+  `declined` for one a person turned down.
+- A rule for every record: a nullable field is present with `null`.
+- The conformance suite grows to 60 checks, with subject and task cases.
+  The runner accepts `validateSubject` and `validateTask`.
+
 ## 0.1.0
 
 The first draft.

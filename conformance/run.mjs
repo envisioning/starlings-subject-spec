@@ -8,6 +8,8 @@
 //   parseDoor      (door: string) => object|null its door reader
 //   doorString     (parsed: object) => string    its door writer
 //   validateDecision (record: object) => boolean optional; the section is skipped without it
+//   validateSubject  (record: object) => boolean optional; likewise
+//   validateTask     (record: object) => boolean optional; likewise
 //
 // Another language ports cases.json, which is the contract; this file is one
 // reading of it. The rules are in SPEC.md §Conformance.
@@ -41,13 +43,15 @@ export function runConformance(cases, adapter) {
     check(got === null || !cases.doorKinds.includes(got.to), `door "${door}": a product door must not read as a standard thing door, got ${JSON.stringify(got)}`);
   }
 
-  const sections = [['valid', true], ['invalid', false]];
-  for (const [section, expected] of sections) {
-    for (const item of cases.decisions[section]) {
-      if (typeof adapter.validateDecision !== 'function') { skipped++; continue; }
-      const record = item.bodyLength ? { ...item.record, body: 'x'.repeat(item.bodyLength) } : item.record;
-      const got = adapter.validateDecision(record) === true;
-      check(got === expected, `decision "${item.name}": expected ${expected ? 'valid' : 'invalid'}, got ${got ? 'valid' : 'invalid'}`);
+  const records = [['decisions', 'decision', adapter.validateDecision], ['subjects', 'subject', adapter.validateSubject], ['tasks', 'task', adapter.validateTask]];
+  for (const [key, label, validate] of records) {
+    for (const [section, expected] of [['valid', true], ['invalid', false]]) {
+      for (const item of cases[key]?.[section] ?? []) {
+        if (typeof validate !== 'function') { skipped++; continue; }
+        const record = item.bodyLength ? { ...item.record, body: 'x'.repeat(item.bodyLength) } : item.record;
+        const got = validate(record) === true;
+        check(got === expected, `${label} "${item.name}": expected ${expected ? 'valid' : 'invalid'}, got ${got ? 'valid' : 'invalid'}`);
+      }
     }
   }
   return { suite: cases.suite, version: cases.version, passed, failed: failures.length, skipped, failures };

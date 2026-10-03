@@ -32,6 +32,10 @@ consequential.
 4. **Apply it once.** Use an `idempotency_key`, so a retry does not repeat it.
 5. **Report the result** with the door of what changed.
 
+A task you are not sure anyone wants is a proposal too. Where the store has
+the task status `proposed`, file it that way and let a person accept or
+decline it.
+
 ## When the person is not in the conversation
 
 You run in the background or on a schedule. Do not apply the change. Put the
